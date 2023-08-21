@@ -66,21 +66,24 @@ public class TrayManager : MonoBehaviour
                     finalHitObj.transform.position = Vector3.Lerp(finalHitObj.transform.position, newPosition, Time.deltaTime * 5f);
 
                     // If the user clicks, enable the rigidbody
-                    if (Input.GetMouseButtonUp(0))
-                    {
-                        finalHitObj.GetComponent<Rigidbody>().isKinematic = false;
-                        finalHitObj.transform.parent = transform;
-                        StartCoroutine(WaitSetGameState(1f, 0, finalHitObj.GetComponent<Rigidbody>()));
+                    if (Input.GetMouseButtonDown(0))
+                    { 
+                        finalHitObj.transform.SetParent(transform);
+                        finalHitObj.transform.position = hit.point;
+                        finalHitObj.transform.localScale = new Vector3(1.25f, 22.89f, 1.25f);
+                        finalHitObj.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                        
+                        
+                        StartCoroutine(WaitSetGameState(0f, 0));
                     }
                 }
             }
         }
     }
 
-    IEnumerator WaitSetGameState(float time, int state, Rigidbody rb)
+    IEnumerator WaitSetGameState(float time, int state)
     {
         yield return new WaitForSeconds(time);
-        rb.isKinematic = true;
         GameStateManager.SetGameState(state);
     }
 }

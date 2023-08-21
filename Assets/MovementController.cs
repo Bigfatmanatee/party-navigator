@@ -13,12 +13,6 @@ public class MovementController : MonoBehaviour
     public float walkBobIntensity = 5f;
     public float walkBobRate = 10f;
 
-    // Checks if there is an object above the player's head preventing standing
-    public Transform crouchDetector;
-
-    public Vector3 crouchSize;
-    private Vector3 startSize;
-
     private Rigidbody rb;
     private float speed;
     private int mode;
@@ -33,7 +27,6 @@ public class MovementController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         speed = moveSpeed;
-        startSize = transform.localScale;
         targetRotation = transform.rotation;
     }
 
@@ -70,14 +63,6 @@ public class MovementController : MonoBehaviour
             else
                 speed = Mathf.Lerp(speed, moveSpeed, 4f * Time.deltaTime);
 
-            if (Input.GetKey(KeyCode.LeftControl))
-                transform.localScale = Vector3.Lerp(transform.localScale, crouchSize, Time.deltaTime * 5f);
-
-            else if (!IsCrouchColliding())
-            {
-                transform.localScale = Vector3.Lerp(transform.localScale, startSize, Time.deltaTime * 5f);
-            }
-
             // Mouse rotation
             Ray cameraRay = Camera.main.ScreenPointToRay(Input.mousePosition);
             Plane groundPlane = new Plane(Vector3.up, transform.position);
@@ -97,22 +82,6 @@ public class MovementController : MonoBehaviour
         // Applying mouse rotation
         Transform child2 = transform.GetChild(0).GetChild(0);
         child2.localRotation = Quaternion.Lerp(child2.localRotation, targetRotation, mouseRotationSpeed * Time.fixedDeltaTime);
-    }
-
-
-    private bool IsCrouchColliding()
-    {
-        Collider[] results = Physics.OverlapBox(crouchDetector.position, crouchDetector.lossyScale / 2, crouchDetector.rotation);
-
-        int badColliders = 0;
-        foreach (var collider in results)
-        {
-
-            if (!collider.transform.CompareTag("Player"))
-                badColliders++;
-        }
-
-        return !(badColliders == 0);
     }
 
     public void SetMode(int mode)
